@@ -22,4 +22,26 @@ jobs:
       TEST_COMPLETE: false
     steps:
       - export PATH="$HOME/miniconda/bin:$PATH"
-      - 
+      - hash -r
+      - conda config --set always_yes yes --set changeps1 no
+      - conda update -q conda
+      - conda create -q -n test-environment python=$TEST_PYTHON_VERSION pip
+      - source activate test-environment
+      - pip install -r test_requirements.txt
+      - pip install .
+  test:
+    steps:
+      - make test
+
+workflows:
+  version: 2
+  linux-27:
+    jobs:
+      - build-linux-27
+      - install
+      - test
+  linux-36:
+    jobs:
+      - build-linux-36
+      - install
+      - test
