@@ -1,8 +1,10 @@
 version: 2
+
 defaults: &defaults
   working_directory: /tmp
   docker:
     - image: buildpack-deps:trusty
+
 jobs:
   conda-linux:
     <<: *defaults
@@ -39,6 +41,8 @@ jobs:
           at: /tmp/workspace
       - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: source activate workspace/test-environment
+      - checkout eyetracking
+      - run: cd eyetracking
       - run: pip install -r test_requirements.txt
       - run: pip install .
       - run: make test
