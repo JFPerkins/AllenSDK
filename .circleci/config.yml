@@ -1,20 +1,31 @@
 version: 2
 jobs:
-  build-linux-27:
+  conda-linux:
     docker:
       - image: buildpack-deps:trusty
-        environment:
-          TEST_PYTHON_VERSION: 2.7
     steps:
-      - run: wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
-  build-linux-36:
-    docker:
-      - image: buildpack-deps:trusty
-        environment:
-          TEST_PYTHON_VERSION: 3.6
-    steps:
+      - run: mkdir -p workspace
       - run: wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  install:
+      - run: bash miniconda.sh -b -p workspace/miniconda
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - miniconda
+  create-env-27:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - attach_workspace:
+          at: ./workspace
+      - run: export PATH=workspace/miniconda/bin:$PATH"
+      - run: conda config --set always_yes yes --set changeps1 no
+      - run: conda update -q conda
+      - run: conda create -q --prefix workspace/test-environment python=2.7 pip
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - test-environment
+  test:
     docker:
       - image: buildpack-deps:trusty
     environment:
@@ -23,38 +34,21 @@ jobs:
       TEST_API_ENDPOINT: http://api.brain-map.org 
       TEST_COMPLETE: false
     steps:
-      - run: bash miniconda.sh -b -p $HOME/miniconda
-      - run: export PATH="$HOME/miniconda/bin:$PATH"
-      - run: hash -r
-      - run: conda config --set always_yes yes --set changeps1 no
-      - run: conda update -q conda
-      - run: conda create -q -n test-environment python=$TEST_PYTHON_VERSION pip
-      - run: source activate test-environment
+      - attach_workspace:
+          at: ./workspace
+      - run: source activate workspace/test-environment
       - run: pip install -r test_requirements.txt
       - run: pip install .
-  test:
-    docker:
-      - image: buildpack-deps:trusty
-    steps:
       - run: make test
 
 workflows:
   version: 2
   linux-27:
     jobs:
-      - build-linux-27
-      - install:
+      - conda-linux
+      - create-env-27:
           requires:
-            - build-linux-27
+            - conda-linux
       - test:
           requires:
-            - install
-  linux-36:
-    jobs:
-      - build-linux-36
-      - install:
-          requires:
-            - build-linux-36
-      - test:
-          requires:
-            - install
+            - create-env-27
