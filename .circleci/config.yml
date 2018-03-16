@@ -1,8 +1,10 @@
 version: 2
+defaults:
+  working_directory: /tmp
+  docker:
+    - image: buildpack-deps:trusty
 jobs:
   conda-linux:
-    docker:
-      - image: buildpack-deps:trusty
     steps:
       - run: mkdir -p workspace
       - run: wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -12,12 +14,10 @@ jobs:
           paths:
             - miniconda
   create-env-27:
-    docker:
-      - image: buildpack-deps:trusty
     steps:
       - attach_workspace:
-          at: ./workspace
-      - run: export PATH=workspace/miniconda/bin:$PATH
+          at: /tmp/workspace
+      - run: export PATH=/tmp/workspace/miniconda/bin:$PATH
       - run: conda config --set always_yes yes --set changeps1 no
       - run: conda update -q conda
       - run: conda create -q --prefix workspace/test-environment python=2.7 pip
@@ -26,8 +26,6 @@ jobs:
           paths:
             - test-environment
   test:
-    docker:
-      - image: buildpack-deps:trusty
     environment:
       TEST_NWB_FILES: skip
       TEST_OBSERVATORY_EXPERIMENT_PLOTS_DATA: skip
@@ -35,7 +33,7 @@ jobs:
       TEST_COMPLETE: false
     steps:
       - attach_workspace:
-          at: ./workspace
+          at: /tmp/workspace
       - run: source activate workspace/test-environment
       - run: pip install -r test_requirements.txt
       - run: pip install .
