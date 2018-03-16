@@ -41,7 +41,8 @@ jobs:
           at: /tmp/workspace
       - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: source activate workspace/test-environment
-      - checkout eyetracking
+      - checkout:
+          path: eyetracking
       - run: cd eyetracking
       - run: pip install -r test_requirements.txt
       - run: pip install .
