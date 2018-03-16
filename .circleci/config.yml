@@ -42,8 +42,9 @@ jobs:
       - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: source activate workspace/test-environment
       - checkout
-      - run: pip install -r test_requirements.txt
-      - run: pip install .
+        path: allensdk
+      - run: pip install -r allensdk/test_requirements.txt
+      - run: pip install allensdk
       - run: make test
 
 workflows:
