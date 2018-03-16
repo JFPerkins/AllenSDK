@@ -42,8 +42,10 @@ jobs:
       - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: source activate workspace/test-environment
       - checkout:
-          path: eyetracking
-      - run: cd eyetracking
+          path: allensdk
+      - run: ls
+      - run: cd allensdk
+      - run: ls
       - run: pip install -r test_requirements.txt
       - run: pip install .
       - run: make test
