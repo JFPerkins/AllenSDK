@@ -23,6 +23,7 @@ jobs:
       TEST_API_ENDPOINT: http://api.brain-map.org 
       TEST_COMPLETE: false
     steps:
+      - run: bash miniconda.sh -b -p $HOME/miniconda
       - run: export PATH="$HOME/miniconda/bin:$PATH"
       - run: hash -r
       - run: conda config --set always_yes yes --set changeps1 no
@@ -42,10 +43,18 @@ workflows:
   linux-27:
     jobs:
       - build-linux-27
-      - install
-      - test
+      - install:
+          requires:
+            - build-linux-27
+      - test:
+          requires:
+            - install
   linux-36:
     jobs:
       - build-linux-36
-      - install
-      - test
+      - install:
+          requires:
+            - build-linux-36
+      - test:
+          requires:
+            - install
