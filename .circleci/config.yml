@@ -19,7 +19,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      - run: export PATH=/tmp/workspace/miniconda/bin:$PATH
+      - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: conda config --set always_yes yes --set changeps1 no
       - run: conda update -q conda
       - run: conda create -q --prefix workspace/test-environment python=2.7 pip
@@ -37,6 +37,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
+      - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
       - run: source activate workspace/test-environment
       - run: pip install -r test_requirements.txt
       - run: pip install .
