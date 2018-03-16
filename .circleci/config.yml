@@ -6,14 +6,14 @@ jobs:
         environment:
           TEST_PYTHON_VERSION: 2.7
     steps:
-      - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+      - run: wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
   build-linux-36:
     docker:
       - image: buildpack-deps:trusty
         environment:
           TEST_PYTHON_VERSION: 3.6
     steps:
-      - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      - run: wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   install:
     docker:
       - image: buildpack-deps:trusty
@@ -23,19 +23,19 @@ jobs:
       TEST_API_ENDPOINT: http://api.brain-map.org 
       TEST_COMPLETE: false
     steps:
-      - export PATH="$HOME/miniconda/bin:$PATH"
-      - hash -r
-      - conda config --set always_yes yes --set changeps1 no
-      - conda update -q conda
-      - conda create -q -n test-environment python=$TEST_PYTHON_VERSION pip
-      - source activate test-environment
-      - pip install -r test_requirements.txt
-      - pip install .
+      - run: export PATH="$HOME/miniconda/bin:$PATH"
+      - run: hash -r
+      - run: conda config --set always_yes yes --set changeps1 no
+      - run: conda update -q conda
+      - run: conda create -q -n test-environment python=$TEST_PYTHON_VERSION pip
+      - run: source activate test-environment
+      - run: pip install -r test_requirements.txt
+      - run: pip install .
   test:
     docker:
       - image: buildpack-deps:trusty
     steps:
-      - make test
+      - run: make test
 
 workflows:
   version: 2
