@@ -15,6 +15,8 @@ jobs:
     steps:
       - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   install:
+    docker:
+      - image: buildpack-deps:trusty
     environment:
       TEST_NWB_FILES: skip
       TEST_OBSERVATORY_EXPERIMENT_PLOTS_DATA: skip
@@ -30,6 +32,8 @@ jobs:
       - pip install -r test_requirements.txt
       - pip install .
   test:
+    docker:
+      - image: buildpack-deps:trusty
     steps:
       - make test
 
