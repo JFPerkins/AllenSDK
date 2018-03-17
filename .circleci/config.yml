@@ -45,7 +45,7 @@ jobs:
           path: allensdk
       - run: pip install -r allensdk/test_requirements.txt
       - run: pip install allensdk
-      - run: make test
+      - run: make --directory allensdk test
 
 workflows:
   version: 2
