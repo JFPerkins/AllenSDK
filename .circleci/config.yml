@@ -29,6 +29,19 @@ jobs:
           root: workspace
           paths:
             - test-environment
+  create-env-36:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: echo 'export PATH=/tmp/workspace/miniconda/bin:$PATH' >> $BASH_ENV
+      - run: conda config --set always_yes yes --set changeps1 no
+      - run: conda update -q conda
+      - run: conda create -q --prefix workspace/test-environment python=3.6 pip
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - test-environment
   test:
     <<: *defaults
     environment:
@@ -58,3 +71,12 @@ workflows:
       - test:
           requires:
             - create-env-27
+  linux-36:
+    jobs:
+      - conda-linux
+      - create-env-36:
+          requires:
+            - conda-linux
+      - test:
+          requires:
+            - create-env-36
